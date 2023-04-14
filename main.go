@@ -23,4 +23,9 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	err = info.Get_s3_bucket_item_list("s3-ann-test000")
+	if err != nil {
+		fmt.Println(err)
+	}
 }

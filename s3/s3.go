@@ -69,13 +69,28 @@ func (i *Info) Delete_s3_bucket(bucket_name string) error {
 }
 
 func (i *Info) Get_s3_bucket_list() error {
-	output, err := i.S3_clint.ListBuckets(context.Background(), &s3.ListBucketsInput{})
+	output, err := i.S3_clint.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
 		return err
 	}
 
 	for i, bucket := range output.Buckets {
 		fmt.Printf("%d: %s\n", i, *bucket.Name)
+	}
+
+	return nil
+}
+
+func (i *Info) Get_s3_bucket_item_list(bucket_name string) error {
+	resp, err := i.S3_clint.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
+		Bucket: aws.String(bucket_name),
+	})
+	if err != nil {
+		return err
+	}
+
+	for i, v := range resp.Contents {
+		fmt.Printf("num: %d, file: %s, size: %v\n", i, *v.Key, v.Size)
 	}
 
 	return nil
