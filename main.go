@@ -1,18 +1,17 @@
 package main
 
 import (
-	"AWS/s3"
 	"fmt"
 )
 
 func main() {
-	info := s3.Info{}
+	info := S3{}
 
 	accessKey := ""
 	secretKey := ""
 	region := ""
 
-	info.Set_session(accessKey, secretKey, region)
+	info.Init(accessKey, secretKey, region)
 
 	err := info.Set_s3_config()
 	if err != nil {
