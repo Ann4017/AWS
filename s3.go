@@ -15,49 +15,47 @@ import (
 )
 
 type S3 struct {
-	S_Region      string
-	S_Access_Key  string
-	S_Secret_key  string
-	S_Bucket_name string
-	P_Clint       *s3.Client
+	s_region      string
+	s_access_Key  string
+	s_secret_key  string
+	s_bucket_name string
+	pc_clint      *s3.Client
 }
 
-func (c *S3) Init(access_key string, secret_key string, region string) {
-	c.S_Access_Key = access_key
-	c.S_Secret_key = secret_key
-	c.S_Region = region
+func (c *S3) init(access_key string, secret_key string, region string) {
+	c.s_access_Key = access_key
+	c.s_secret_key = secret_key
+	c.s_region = region
 }
 
-func (c *S3) Set_s3_config() error {
-	cred := credentials.NewStaticCredentialsProvider(c.S_Access_Key, c.S_Secret_key, "")
+func (c *S3) set_s3_config() error {
+	cred := credentials.NewStaticCredentialsProvider(c.s_access_Key, c.s_secret_key, "")
 	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithCredentialsProvider(cred),
-		config.WithRegion(c.S_Region))
+		config.WithRegion(c.s_region))
 	if err != nil {
 		return err
 	}
-	c.P_Clint = s3.NewFromConfig(cfg)
+	c.pc_clint = s3.NewFromConfig(cfg)
 
 	return nil
 }
 
-func (c *S3) Insert_s3_bucket(new_bucket_name string, region types.BucketLocationConstraint) error {
-	_, err := c.P_Clint.CreateBucket(context.Background(), &s3.CreateBucketInput{
+func (c *S3) insert_s3_bucket(new_bucket_name string, region types.BucketLocationConstraint) (bool, error) {
+	_, err := c.pc_clint.CreateBucket(context.Background(), &s3.CreateBucketInput{
 		Bucket: aws.String(new_bucket_name),
 		CreateBucketConfiguration: &types.CreateBucketConfiguration{
 			LocationConstraint: region,
 		},
 	})
 	if err != nil {
-		return err
+		return false, err
 	}
 
-	fmt.Printf("Insert bucket: %s\n", new_bucket_name)
-
-	return nil
+	return true, nil
 }
 
-func (c *S3) Delete_s3_bucket(bucket_name string) (bool, error) {
-	_, err := c.P_Clint.DeleteBucket(context.Background(), &s3.DeleteBucketInput{
+func (c *S3) delete_s3_bucket(bucket_name string) (bool, error) {
+	_, err := c.pc_clint.DeleteBucket(context.Background(), &s3.DeleteBucketInput{
 		Bucket: aws.String(bucket_name),
 	})
 	if err != nil {
@@ -67,42 +65,45 @@ func (c *S3) Delete_s3_bucket(bucket_name string) (bool, error) {
 	return true, nil
 }
 
-func (c *S3) Get_s3_bucket_list() error {
-	output, err := c.P_Clint.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
+func (c *S3) get_s3_bucket_list() (bucket_list []string, err error) {
+	output, err := c.pc_clint.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	item := make([]string, len(output.Buckets))
 	for i, bucket := range output.Buckets {
-		fmt.Printf("%d: %s\n", i, *bucket.Name)
+		item[i] = *bucket.Name
 	}
 
-	return nil
+	return item, nil
 }
 
-func (c *S3) Get_s3_bucket_item_list(bucket_name string) error {
-	resp, err := c.P_Clint.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
+func (c *S3) get_s3_bucket_item_list(bucket_name string) (bucket_item_list []string, err error) {
+	resp, err := c.pc_clint.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
 		Bucket: aws.String(bucket_name),
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	item := make([]string, len(resp.Contents))
 	for i, v := range resp.Contents {
 		fmt.Printf("num: %d, file: %s, size: %v\n", i, *v.Key, v.Size)
+		item[i] = *v.Key
 	}
 
-	return nil
+	return item, nil
 }
 
-func (c *S3) Upload_file(file_name string, folder string, bucket_name string) (*manager.UploadOutput, error) {
+func (c *S3) upload_file(file_name string, folder string, bucket_name string) (*manager.UploadOutput, error) {
 	file, err := os.Open(file_name)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	uploader := manager.NewUploader(c.P_Clint)
+	uploader := manager.NewUploader(c.pc_clint)
 	path_key := filepath.Join(folder, file_name)
 
 	result, err := uploader.Upload(context.Background(), &s3.PutObjectInput{
@@ -118,7 +119,7 @@ func (c *S3) Upload_file(file_name string, folder string, bucket_name string) (*
 	return result, nil
 }
 
-func (c *S3) Download_file(directory string, key string) error {
+func (c *S3) download_file(directory string, key string) error {
 	file := filepath.Join(directory, key)
 	if err := os.MkdirAll(filepath.Dir(file), 7750); err != nil {
 		return err
@@ -131,9 +132,9 @@ func (c *S3) Download_file(directory string, key string) error {
 
 	defer fd.Close()
 
-	downloader := manager.NewDownloader(c.P_Clint)
+	downloader := manager.NewDownloader(c.pc_clint)
 	_, err = downloader.Download(context.TODO(), fd, &s3.GetObjectInput{
-		Bucket: &c.S_Bucket_name,
+		Bucket: &c.s_bucket_name,
 		Key:    &key,
 	})
 

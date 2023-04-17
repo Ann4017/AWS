@@ -11,19 +11,19 @@ func main() {
 	secretKey := ""
 	region := ""
 
-	info.Init(accessKey, secretKey, region)
+	info.init(accessKey, secretKey, region)
 
-	err := info.Set_s3_config()
+	err := info.set_s3_config()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = info.Get_s3_bucket_list()
+	err = info.get_s3_bucket_list()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	err = info.Get_s3_bucket_item_list("s3-ann-test000")
+	err = info.get_s3_bucket_item_list("s3-ann-test000")
 	if err != nil {
 		fmt.Println(err)
 	}
