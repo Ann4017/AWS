@@ -8,9 +8,9 @@ import (
 func main() {
 	info := s3.Info{}
 
-	accessKey := "AKIAVOZYFWFTBWEOBG7T"
-	secretKey := "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"
-	region := "ap-northeast-2"
+	accessKey := ""
+	secretKey := ""
+	region := ""
 
 	info.Set_session(accessKey, secretKey, region)
 
