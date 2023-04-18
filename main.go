@@ -1,28 +1,37 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
-	info := S3{}
+	accessKey := "ses-smtp-user.20230418-200907"
+	secretKey := "AKIAVOZYFWFTBRFZPU6H,BF2GwJlO8sQtmgOvtpuKfUwnm8g0dXiDvxxIRMOhmR2F"
+	region := "ap-northeast-1"
 
-	accessKey := ""
-	secretKey := ""
-	region := ""
+	// info := S3{}
 
-	info.init(accessKey, secretKey, region)
+	// info.init(accessKey, secretKey, region)
 
-	err := info.set_s3_config()
+	// err := info.set_s3_config()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	// list, err := info.get_s3_bucket_list()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// for _, name := range list {
+	// 	fmt.Println(name)
+	// }
+
+	sns_info := SNS{}
+
+	sns_info.sns_init(accessKey, secretKey, region)
+
+	svc := sns_info.get_sess()
+	err := sns_info.send_sms("안녕하세용", "+821045196551", svc)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	list, err := info.get_s3_bucket_list()
-	if err != nil {
-		fmt.Println(err)
-	}
-	for _, name := range list {
-		fmt.Println(name)
-	}
 }
