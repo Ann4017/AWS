@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 func main() {
-	accessKey := "ses-smtp-user.20230418-200907"
-	secretKey := "AKIAVOZYFWFTBRFZPU6H,BF2GwJlO8sQtmgOvtpuKfUwnm8g0dXiDvxxIRMOhmR2F"
+	accessKey := ""
+	secretKey := ""
 	region := "ap-northeast-1"
 
 	// info := S3{}
