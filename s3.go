@@ -22,13 +22,13 @@ type S3 struct {
 	pc_clint      *s3.Client
 }
 
-func (c *S3) init(access_key string, secret_key string, region string) {
+func (c *S3) Init(access_key string, secret_key string, region string) {
 	c.s_access_Key = access_key
 	c.s_secret_key = secret_key
 	c.s_region = region
 }
 
-func (c *S3) set_s3_config() error {
+func (c *S3) Set_s3_config() error {
 	cred := credentials.NewStaticCredentialsProvider(c.s_access_Key, c.s_secret_key, "")
 	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithCredentialsProvider(cred),
 		config.WithRegion(c.s_region))
@@ -40,7 +40,7 @@ func (c *S3) set_s3_config() error {
 	return nil
 }
 
-func (c *S3) insert_s3_bucket(new_bucket_name string, region types.BucketLocationConstraint) (bool, error) {
+func (c *S3) Insert_s3_bucket(new_bucket_name string, region types.BucketLocationConstraint) (bool, error) {
 	_, err := c.pc_clint.CreateBucket(context.Background(), &s3.CreateBucketInput{
 		Bucket: aws.String(new_bucket_name),
 		CreateBucketConfiguration: &types.CreateBucketConfiguration{
@@ -54,7 +54,7 @@ func (c *S3) insert_s3_bucket(new_bucket_name string, region types.BucketLocatio
 	return true, nil
 }
 
-func (c *S3) delete_s3_bucket(bucket_name string) (bool, error) {
+func (c *S3) Delete_s3_bucket(bucket_name string) (bool, error) {
 	_, err := c.pc_clint.DeleteBucket(context.Background(), &s3.DeleteBucketInput{
 		Bucket: aws.String(bucket_name),
 	})
@@ -65,7 +65,7 @@ func (c *S3) delete_s3_bucket(bucket_name string) (bool, error) {
 	return true, nil
 }
 
-func (c *S3) get_s3_bucket_list() (bucket_list []string, err error) {
+func (c *S3) Get_s3_bucket_list() (bucket_list []string, err error) {
 	output, err := c.pc_clint.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (c *S3) get_s3_bucket_list() (bucket_list []string, err error) {
 	return item, nil
 }
 
-func (c *S3) get_s3_bucket_item_list(bucket_name string) (bucket_item_list []string, err error) {
+func (c *S3) Get_s3_bucket_item_list(bucket_name string) (bucket_item_list []string, err error) {
 	resp, err := c.pc_clint.ListObjectsV2(context.Background(), &s3.ListObjectsV2Input{
 		Bucket: aws.String(bucket_name),
 	})
@@ -96,7 +96,7 @@ func (c *S3) get_s3_bucket_item_list(bucket_name string) (bucket_item_list []str
 	return item, nil
 }
 
-func (c *S3) upload_file(file_name string, folder string, bucket_name string) (*manager.UploadOutput, error) {
+func (c *S3) Upload_file(file_name string, folder string, bucket_name string) (*manager.UploadOutput, error) {
 	file, err := os.Open(file_name)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func (c *S3) upload_file(file_name string, folder string, bucket_name string) (*
 	return result, nil
 }
 
-func (c *S3) download_file(directory string, key string) error {
+func (c *S3) Download_file(directory string, key string) error {
 	file := filepath.Join(directory, key)
 	if err := os.MkdirAll(filepath.Dir(file), 7750); err != nil {
 		return err

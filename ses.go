@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
-	"github.com/aws/aws-sdk-go/aws"
 )
 
 type SES_info struct {
@@ -21,20 +21,20 @@ type SES_info struct {
 	s_body       string
 }
 
-func (c *SES_info) ses_init(access_key string, secret_key string, region string) {
+func (c *SES_info) Init(access_key string, secret_key string, region string) {
 	c.s_region = region
 	c.s_access_Key = access_key
 	c.s_secret_key = secret_key
 }
 
-func (c *SES_info) write_msg(sender, recipient, subject, body string) {
+func (c *SES_info) Write_msg(sender, recipient, subject, body string) {
 	c.s_sender = sender
 	c.s_recipient = recipient
 	c.s_subject = subject
 	c.s_body = body
 }
 
-func (c *SES_info) set_cfg() error {
+func (c *SES_info) Set_cfg() error {
 	cred := credentials.NewStaticCredentialsProvider(c.s_access_Key, c.s_secret_key, "")
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithCredentialsProvider(cred), config.WithRegion(c.s_region))
@@ -47,7 +47,7 @@ func (c *SES_info) set_cfg() error {
 	return nil
 }
 
-func (c *SES_info) send_email(client *ses.Client, sender, recipient, subject, body string) error {
+func (c *SES_info) Send_email(client *ses.Client, sender, recipient, subject, body string) error {
 	input := ses.SendEmailInput{
 		Destination: &types.Destination{
 			ToAddresses: []string{recipient},

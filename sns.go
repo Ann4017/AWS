@@ -16,13 +16,13 @@ type SNS struct {
 	pc_session   *session.Session
 }
 
-func (c *SNS) sns_init(access_key string, secret_key string, region string) {
+func (c *SNS) Init(access_key string, secret_key string, region string) {
 	c.s_access_Key = access_key
 	c.s_secret_key = secret_key
 	c.s_region = region
 }
 
-func (c *SNS) get_sess() *sns.SNS {
+func (c *SNS) Get_sess() *sns.SNS {
 	cred := credentials.NewStaticCredentials(c.s_access_Key, c.s_secret_key, "")
 	sess := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String(c.s_region),
@@ -34,7 +34,7 @@ func (c *SNS) get_sess() *sns.SNS {
 	return svc
 }
 
-func (c *SNS) send_sms(msg string, phone_num string, svc *sns.SNS) error {
+func (c *SNS) Send_sms(msg string, phone_num string, svc *sns.SNS) error {
 	params := &sns.PublishInput{
 		Message:     aws.String(msg),
 		PhoneNumber: aws.String(phone_num),
