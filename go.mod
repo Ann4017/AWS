@@ -20,6 +20,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.26 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.14.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.31.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ses v1.15.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.12.8 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.8 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.9 // indirect
